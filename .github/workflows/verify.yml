@@ -1,0 +1,49 @@
+name: Build Dipren
+
+on:
+  push:
+    branches:
+      - main
+      - feature/*
+  pull_request:
+    branches:
+      - main
+
+env:
+  SOURCE_DIRECTORY: './source'
+  RESULT_DIRECTORY: './output/result'
+
+jobs:
+  Build:
+
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: development
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore ${{env.SOURCE_DIRECTORY}}
+
+    - name: Build solution
+      run: dotnet build --configuration Debug --no-restore ${{env.SOURCE_DIRECTORY}}
+
+    - name: Verify solution
+      run: dotnet test --no-restore --verbosity normal --logger trx --results-directory ${{env.RESULT_DIRECTORY}} ${{env.SOURCE_DIRECTORY}}
