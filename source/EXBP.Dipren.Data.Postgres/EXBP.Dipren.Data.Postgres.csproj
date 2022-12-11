@@ -7,7 +7,7 @@
     <Title>Postgres Engine Data Store for Dipren</Title>
     <Authors>ch.jahnert</Authors>
     <Description>This package contains a Postgres Engine Data Store for DIPREN. This implementation is suitable for processing clusters with hundreds or thousands of processing nodes.</Description>
-    <Copyright>Copyright (c) 2022 Christian JÃ¤hnert</Copyright>
+    <Copyright>Copyright (c) 2022 Christian Jähnert</Copyright>
     <PackageProjectUrl>https://github.com/chjahnert/exbp.dipren.data.postgres/wiki</PackageProjectUrl>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/chjahnert/exbp.dipren.data.postgres</RepositoryUrl>
