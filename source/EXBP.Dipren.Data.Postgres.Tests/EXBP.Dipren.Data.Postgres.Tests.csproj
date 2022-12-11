@@ -25,19 +25,4 @@
     <ProjectReference Include="..\EXBP.Dipren.Data.Postgres\EXBP.Dipren.Data.Postgres.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="PostgresEngineDataStoreTestsResources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>PostgresEngineDataStoreTestsResources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="PostgresEngineDataStoreTestsResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>PostgresEngineDataStoreTestsResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
 </Project>

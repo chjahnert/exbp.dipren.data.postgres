@@ -12,7 +12,9 @@ namespace EXBP.Dipren.Data.Postgres.Tests
     public class PostgresEngineDataStoreTests : EngineDataStoreTests, IDisposable
     {
         protected const string CONNECTION_STRING = "Host = localhost; Port = 5432; Database = postgres; User ID = postgres; Password = development";
-        private const string PATH_SCHEMA_SCRIPT = @"../../../../Database/dipren.sql";
+
+        private const string PATH_SCHEMA_INSTALL_SCRIPT = @"../../../../Database/install.sql";
+        private const string PATH_SCHEMA_REMOVE_SCRIPT = @"../../../../Database/remove.sql";
 
 
         protected NpgsqlDataSource DataSource { get; }
@@ -54,14 +56,16 @@ namespace EXBP.Dipren.Data.Postgres.Tests
 
         private async Task DropDatabaseSchemaAsync(CancellationToken cancellation)
         {
-            await using NpgsqlCommand command = this.DataSource.CreateCommand(PostgresEngineDataStoreTestsResources.QueryDropSchema);
+            string script = await File.ReadAllTextAsync(PATH_SCHEMA_REMOVE_SCRIPT, cancellation);
+
+            await using NpgsqlCommand command = this.DataSource.CreateCommand(script);
 
             await command.ExecuteNonQueryAsync(cancellation);
         }
 
         private async Task CreateDatabaseSchemaAsync(CancellationToken cancellation)
         {
-            string script = await File.ReadAllTextAsync(PATH_SCHEMA_SCRIPT, cancellation);
+            string script = await File.ReadAllTextAsync(PATH_SCHEMA_INSTALL_SCRIPT, cancellation);
 
             await using NpgsqlCommand command = this.DataSource.CreateCommand(script);
 
