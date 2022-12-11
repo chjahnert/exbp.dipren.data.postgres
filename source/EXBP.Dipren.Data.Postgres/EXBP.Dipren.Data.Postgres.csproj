@@ -33,11 +33,15 @@
     </None>
     <None Include="..\Database\install.sql" Visible="false">
       <Pack>True</Pack>
-      <PackagePath>\database\dipren-postgres-install.sql</PackagePath>
+      <PackagePath>database\dipren-postgres-install.sql</PackagePath>
     </None>
     <None Include="..\Database\remove.sql" Visible="false">
       <Pack>True</Pack>
-      <PackagePath>\database\dipren-postgres-remove.sql</PackagePath>
+      <PackagePath>database\dipren-postgres-remove.sql</PackagePath>
+    </None>
+    <None Include="EXBP.Dipren.Data.Postgres.targets" Visible="false">
+      <Pack>True</Pack>
+      <PackagePath>build\</PackagePath>
     </None>
   </ItemGroup>
 
