@@ -4,4 +4,4 @@
 --
 
 
-DROP SCHEMA IF EXISTS "dipren";
+DROP SCHEMA IF EXISTS "dipren" CASCADE;
