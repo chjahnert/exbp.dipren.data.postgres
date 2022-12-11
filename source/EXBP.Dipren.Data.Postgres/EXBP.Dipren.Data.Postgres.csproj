@@ -31,7 +31,7 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Include="..\Database\dipren.sql" Visible="false">
+    <None Include="..\Database\install.sql" Visible="false">
       <Pack>True</Pack>
       <PackagePath>\database</PackagePath>
     </None>

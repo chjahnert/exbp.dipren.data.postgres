@@ -12,7 +12,7 @@ namespace EXBP.Dipren.Data.Postgres.Tests
     public class PostgresEngineDataStoreTests : EngineDataStoreTests, IDisposable
     {
         protected const string CONNECTION_STRING = "Host = localhost; Port = 5432; Database = postgres; User ID = postgres; Password = development";
-        private const string PATH_SCHEMA_SCRIPT = @"../../../../Database/dipren.sql";
+        private const string PATH_SCHEMA_SCRIPT = @"../../../../Database/install.sql";
 
 
         protected NpgsqlDataSource DataSource { get; }
