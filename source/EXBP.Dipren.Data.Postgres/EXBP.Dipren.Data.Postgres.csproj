@@ -33,11 +33,11 @@
     </None>
     <None Include="..\Database\install.sql" Visible="false">
       <Pack>True</Pack>
-      <PackagePath>\database</PackagePath>
+      <PackagePath>\database\dipren-postgres-install.sql</PackagePath>
     </None>
     <None Include="..\Database\remove.sql" Visible="false">
       <Pack>True</Pack>
-      <PackagePath>\database</PackagePath>
+      <PackagePath>\database\dipren-postgres-remove.sql</PackagePath>
     </None>
   </ItemGroup>
 
