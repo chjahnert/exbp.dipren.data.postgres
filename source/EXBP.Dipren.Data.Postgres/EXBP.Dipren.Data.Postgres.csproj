@@ -35,6 +35,10 @@
       <Pack>True</Pack>
       <PackagePath>\database</PackagePath>
     </None>
+    <None Include="..\Database\remove.sql" Visible="false">
+      <Pack>True</Pack>
+      <PackagePath>\database</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

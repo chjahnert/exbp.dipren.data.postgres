@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{64DA033E-5138-4784-9EB8-2FC4598A4CE2}"
 	ProjectSection(SolutionItems) = preProject
 		Database\install.sql = Database\install.sql
+		Database\remove.sql = Database\remove.sql
 	EndProjectSection
 EndProject
 Global
