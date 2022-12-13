@@ -43,7 +43,7 @@
     </None>
     <None Include="EXBP.Dipren.Data.Postgres.targets" Visible="false">
       <Pack>True</Pack>
-      <PackagePath>build\</PackagePath>
+      <PackagePath>build\EXBP.Dipren.Data.Postgres.targets</PackagePath>
     </None>
   </ItemGroup>
 
