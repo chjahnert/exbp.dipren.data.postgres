@@ -19,6 +19,8 @@ namespace EXBP.Dipren.Data.Postgres
     /// </remarks>
     internal class PostgresEngineDataStoreImplementation : EngineDataStore, IEngineDataStore, IDisposable, IAsyncDisposable
     {
+        private const int MAXIMUM_CANDIDATES = 16;
+
         private const string SQL_STATE_FOREIGN_KEY_VIOLATION = "23503";
         private const string SQL_STATE_PRIMARY_KEY_VIOLATION = "23505";
 
@@ -607,6 +609,7 @@ namespace EXBP.Dipren.Data.Postgres
                 command.Parameters.AddWithValue("@owner", NpgsqlDbType.Varchar, COLUMN_PARTITION_OWNER_LENGTH, requester);
                 command.Parameters.AddWithValue("@updated", NpgsqlDbType.Timestamp, uktsTimestamp);
                 command.Parameters.AddWithValue("@active", NpgsqlDbType.Timestamp, uktsActive);
+                command.Parameters.AddWithValue("@candidates", NpgsqlDbType.Integer, MAXIMUM_CANDIDATES);
 
                 await using (DbDataReader reader = await command.ExecuteReaderAsync(cancellation))
                 {
@@ -677,6 +680,7 @@ namespace EXBP.Dipren.Data.Postgres
 
                 command.Parameters.AddWithValue("@job_id", NpgsqlDbType.Char, COLUMN_JOB_NAME_LENGTH, jobId);
                 command.Parameters.AddWithValue("@active", NpgsqlDbType.Timestamp, uktsActive);
+                command.Parameters.AddWithValue("@candidates", NpgsqlDbType.Integer, MAXIMUM_CANDIDATES);
 
                 int affected = await command.ExecuteNonQueryAsync(cancellation);
 
