@@ -680,6 +680,7 @@ namespace EXBP.Dipren.Data.Postgres
 
                 command.Parameters.AddWithValue("@job_id", NpgsqlDbType.Char, COLUMN_JOB_NAME_LENGTH, jobId);
                 command.Parameters.AddWithValue("@active", NpgsqlDbType.Timestamp, uktsActive);
+                command.Parameters.AddWithValue("@candidates", NpgsqlDbType.Integer, MAXIMUM_CANDIDATES);
 
                 int affected = await command.ExecuteNonQueryAsync(cancellation);
 

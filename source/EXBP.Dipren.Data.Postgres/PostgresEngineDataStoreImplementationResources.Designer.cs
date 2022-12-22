@@ -431,7 +431,7 @@ namespace EXBP.Dipren.Data.Postgres {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WITH &quot;candidate&quot; AS
+        ///   Looks up a localized string similar to WITH &quot;candidates&quot; AS
         ///(
         ///  SELECT
         ///    &quot;id&quot;
@@ -446,17 +446,18 @@ namespace EXBP.Dipren.Data.Postgres {
         ///  ORDER BY
         ///    &quot;remaining&quot; DESC
         ///  LIMIT
-        ///    1
-        ///  FOR UPDATE
-        ///)
-        ///UPDATE
-        ///  &quot;dipren&quot;.&quot;partitions&quot; AS &quot;target&quot;
-        ///SET
-        ///  &quot;is_split_requested&quot; = TRUE
-        ///FROM
-        ///  &quot;candidate&quot;
-        ///WHERE
-        ///  (&quot;target&quot;.&quot;id&quot; = &quot;candidate&quot;.&quot;id&quot;);.
+        ///    @candidates
+        ///),
+        ///&quot;candidate&quot; AS
+        ///(
+        ///  SELECT
+        ///    t2.&quot;id&quot;
+        ///  FROM
+        ///    &quot;candidates&quot; AS t1
+        ///    INNER JOIN &quot;dipren&quot;.&quot;partitions&quot; AS t2 ON (t1.&quot;id&quot; = t2.&quot;id&quot;)
+        ///  WHERE
+        ///    (t2.&quot;job_id&quot; = @job_id) AND
+        ///    (t2.&quot;owne [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string QueryTryRequestSplit {
             get {
