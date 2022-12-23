@@ -12,8 +12,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="EXBP.Dipren" Version="1.0.0-preview-20221221-1" />
-    <PackageReference Include="EXBP.Dipren.Data.Tests" Version="1.0.0-preview-20221221-1" />
+    <PackageReference Include="EXBP.Dipren" Version="1.0.0-preview-20221223-1" />
+    <PackageReference Include="EXBP.Dipren.Data.Tests" Version="1.0.0-preview-20221223-1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
     <PackageReference Include="Npgsql" Version="7.0.1" />
     <PackageReference Include="NUnit" Version="3.13.3" />

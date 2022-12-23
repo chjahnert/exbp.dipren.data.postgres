@@ -161,7 +161,7 @@ namespace EXBP.Dipren.Data.Postgres {
         ///  &quot;remaining&quot;,
         ///  &quot;throughput&quot;,
         ///  &quot;is_completed&quot;,
-        ///  &quot;is_split_requested&quot;
+        ///  &quot;split_requester&quot;
         ///)
         ///VALUES
         ///(
@@ -178,12 +178,23 @@ namespace EXBP.Dipren.Data.Postgres {
         ///  @remaining,
         ///  @throughput,
         ///  @is_completed,
-        ///  @is_split_requested
+        ///  @split_requester
         ///);.
         /// </summary>
         internal static string QueryInsertPartition {
             get {
                 return ResourceManager.GetString("QueryInsertPartition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT
+        ///  COALESCE((SELECT 1 FROM &quot;dipren&quot;.&quot;jobs&quot; WHERE (&quot;id&quot; = @job_id) LIMIT 1), 0) AS &quot;job_exists&quot;,
+        ///  COALESCE((SELECT 1 FROM &quot;dipren&quot;.&quot;partitions&quot; WHERE (&quot;job_id&quot; = @job_id) AND (&quot;split_requester&quot; = @requester) LIMIT 1), 0) AS &quot;requests_exist&quot;;.
+        /// </summary>
+        internal static string QueryIsSplitRequestPending {
+            get {
+                return ResourceManager.GetString("QueryIsSplitRequestPending", resourceCulture);
             }
         }
         
@@ -384,7 +395,7 @@ namespace EXBP.Dipren.Data.Postgres {
         ///  &quot;remaining&quot; AS &quot;remaining&quot;,
         ///  &quot;throughput&quot; AS &quot;throughput&quot;,
         ///  &quot;is_completed&quot; AS &quot;is_completed&quot;,
-        ///  &quot;is_split_requested&quot; AS &quot;is_split_requested&quot;
+        ///  &quot;split_requester&quot; AS &quot;split_requester&quot;
         ///FROM
         ///  &quot;dipren&quot;.&quot;partitions&quot;
         ///WHERE
@@ -445,7 +456,7 @@ namespace EXBP.Dipren.Data.Postgres {
         ///    (&quot;owner&quot; IS NOT NULL) AND
         ///    (&quot;updated&quot; &gt;= @active) AND
         ///    (&quot;is_completed&quot; = FALSE) AND
-        ///    (&quot;is_split_requested&quot; = FALSE)
+        ///    (&quot;split_requester&quot; IS NULL)
         ///  ORDER BY
         ///    &quot;remaining&quot; DESC
         ///  LIMIT
@@ -455,7 +466,7 @@ namespace EXBP.Dipren.Data.Postgres {
         ///UPDATE
         ///  &quot;dipren&quot;.&quot;partitions&quot; AS &quot;target&quot;
         ///SET
-        ///  &quot;is_split_requested&quot; = TRUE
+        ///  &quot;split_requester&quot; = @requester
         ///FROM
         ///  &quot;candidate&quot;
         ///WHERE
@@ -478,7 +489,7 @@ namespace EXBP.Dipren.Data.Postgres {
         ///  &quot;processed&quot; = @processed,
         ///  &quot;remaining&quot; = @remaining,
         ///  &quot;throughput&quot; = @throughput,
-        ///  &quot;is_split_requested&quot; = @is_split_requested
+        ///  &quot;split_requester&quot; = @split_requester
         ///WHERE
         ///  (&quot;id&quot; = @partition_id) AND
         ///  (&quot;owner&quot; = @owner);.
