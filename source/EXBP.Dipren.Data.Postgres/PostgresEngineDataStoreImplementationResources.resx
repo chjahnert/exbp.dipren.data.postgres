@@ -305,7 +305,8 @@ SET
   "processed" = @processed,
   "remaining" = @remaining,
   "throughput" = @throughput,
-  "is_completed" = @completed
+  "is_completed" = @completed,
+  "split_requester" = CASE WHEN @completed = TRUE THEN NULL ELSE "split_requester" END
 WHERE
   ("id" = @id) AND
   ("owner" = @owner)

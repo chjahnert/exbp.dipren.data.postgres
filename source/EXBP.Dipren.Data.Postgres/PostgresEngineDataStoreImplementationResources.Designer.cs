@@ -314,7 +314,8 @@ namespace EXBP.Dipren.Data.Postgres {
         ///  &quot;processed&quot; = @processed,
         ///  &quot;remaining&quot; = @remaining,
         ///  &quot;throughput&quot; = @throughput,
-        ///  &quot;is_completed&quot; = @completed
+        ///  &quot;is_completed&quot; = @completed,
+        ///  &quot;split_requester&quot; = CASE WHEN @completed = TRUE THEN NULL ELSE &quot;split_requester&quot; END
         ///WHERE
         ///  (&quot;id&quot; = @id) AND
         ///  (&quot;owner&quot; = @owner)
@@ -325,10 +326,7 @@ namespace EXBP.Dipren.Data.Postgres {
         ///  &quot;updated&quot; AS &quot;updated&quot;,
         ///  &quot;owner&quot; AS &quot;owner&quot;,
         ///  &quot;first&quot; AS &quot;first&quot;,
-        ///  &quot;last&quot; AS &quot;last&quot;,
-        ///  &quot;is_inclusive&quot; AS &quot;is_inclusive&quot;,
-        ///  &quot;position&quot; AS &quot;position&quot;,
-        ///  &quot;processed&quot; [rest of string was truncated]&quot;;.
+        ///  &quot;last&quot; AS [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string QueryReportProgress {
             get {
