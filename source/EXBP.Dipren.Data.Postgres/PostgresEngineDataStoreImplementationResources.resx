@@ -188,7 +188,7 @@ VALUES
   "remaining",
   "throughput",
   "is_completed",
-  "is_split_requested"
+  "split_requester"
 )
 VALUES
 (
@@ -205,8 +205,13 @@ VALUES
   @remaining,
   @throughput,
   @is_completed,
-  @is_split_requested
+  @split_requester
 );</value>
+  </data>
+  <data name="QueryIsSplitRequestPending" xml:space="preserve">
+    <value>SELECT
+  COALESCE((SELECT 1 FROM "dipren"."jobs" WHERE ("id" = @job_id) LIMIT 1), 0) AS "job_exists",
+  COALESCE((SELECT 1 FROM "dipren"."partitions" WHERE ("job_id" = @job_id) AND ("split_requester" = @requester) LIMIT 1), 0) AS "requests_exist";</value>
   </data>
   <data name="QueryMarkJobAsCompleted" xml:space="preserve">
     <value>UPDATE
@@ -300,7 +305,8 @@ SET
   "processed" = @processed,
   "remaining" = @remaining,
   "throughput" = @throughput,
-  "is_completed" = @completed
+  "is_completed" = @completed,
+  "split_requester" = CASE WHEN @completed = TRUE THEN NULL ELSE "split_requester" END
 WHERE
   ("id" = @id) AND
   ("owner" = @owner)
@@ -318,7 +324,7 @@ RETURNING
   "remaining" AS "remaining",
   "throughput" AS "throughput",
   "is_completed" AS "is_completed",
-  "is_split_requested" AS "is_split_requested";</value>
+  "split_requester" AS "split_requester";</value>
   </data>
   <data name="QueryRetrieveJobById" xml:space="preserve">
     <value>SELECT
@@ -356,7 +362,7 @@ WHERE
   SUM(t2."processed") AS "keys_completed",
   COALESCE(MAX(t2."updated"), t1."updated") AS "last_activity",
   COALESCE((SELECT SUM("acquired") - COUNT(1) FROM "dipren"."partitions" WHERE ("job_id" = t1."id") AND ("acquired" &gt; 0)), 0) AS "ownership_changes",
-  COUNT(1) FILTER (WHERE (t1."state" = 'processing') AND (t2."is_completed" = FALSE) AND (t2."is_split_requested" = TRUE)) AS "split_requests_pending",
+  COUNT(1) FILTER (WHERE (t1."state" = 'processing') AND (t2."is_completed" = FALSE) AND (t2."split_requester" IS NOT NULL)) AS "split_requests_pending",
   COALESCE(SUM("throughput") FILTER (WHERE (t1."state" = 'processing') AND (t2."is_completed" = FALSE) AND (t2."updated" &gt;= (@timestamp - ('1 MICROSECOND'::INTERVAL * ((t1."timeout" + t1."clock_drift")::DOUBLE PRECISION / 10))))), 0.0) AS "current_throughput"
 FROM
   "dipren"."jobs" t1
@@ -390,7 +396,7 @@ GROUP BY
   "remaining" AS "remaining",
   "throughput" AS "throughput",
   "is_completed" AS "is_completed",
-  "is_split_requested" AS "is_split_requested"
+  "split_requester" AS "split_requester"
 FROM
   "dipren"."partitions"
 WHERE
@@ -437,7 +443,7 @@ RETURNING
   "remaining" AS "remaining",
   "throughput" AS "throughput",
   "is_completed" AS "is_completed",
-  "is_split_requested" AS "is_split_requested";</value>
+  "split_requester" AS "split_requester";</value>
   </data>
   <data name="QueryTryRequestSplit" xml:space="preserve">
     <value>WITH "candidate" AS
@@ -451,7 +457,7 @@ RETURNING
     ("owner" IS NOT NULL) AND
     ("updated" &gt;= @active) AND
     ("is_completed" = FALSE) AND
-    ("is_split_requested" = FALSE)
+    ("split_requester" IS NULL)
   ORDER BY
     "remaining" DESC
   LIMIT
@@ -461,7 +467,7 @@ RETURNING
 UPDATE
   "dipren"."partitions" AS "target"
 SET
-  "is_split_requested" = TRUE
+  "split_requester" = @requester
 FROM
   "candidate"
 WHERE
@@ -478,7 +484,7 @@ SET
   "processed" = @processed,
   "remaining" = @remaining,
   "throughput" = @throughput,
-  "is_split_requested" = @is_split_requested
+  "split_requester" = @split_requester
 WHERE
   ("id" = @partition_id) AND
   ("owner" = @owner);</value>

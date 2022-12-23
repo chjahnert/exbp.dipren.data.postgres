@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
@@ -272,7 +273,7 @@ namespace EXBP.Dipren.Data.Postgres
             command.Parameters.AddWithValue("@remaining", NpgsqlDbType.Bigint, partition.Remaining);
             command.Parameters.AddWithValue("@throughput", NpgsqlDbType.Double, partition.Throughput);
             command.Parameters.AddWithValue("@is_completed", NpgsqlDbType.Boolean, partition.IsCompleted);
-            command.Parameters.AddWithValue("@is_split_requested", NpgsqlDbType.Boolean, partition.IsSplitRequested);
+            command.Parameters.AddWithValue("@split_requester", NpgsqlDbType.Varchar, COLUMN_PARTITION_OWNER_LENGTH, ((object) partition.SplitRequester) ?? DBNull.Value);
 
             try
             {
@@ -343,7 +344,7 @@ namespace EXBP.Dipren.Data.Postgres
                 command.Parameters.AddWithValue("@processed", NpgsqlDbType.Bigint, partitionToUpdate.Processed);
                 command.Parameters.AddWithValue("@throughput", NpgsqlDbType.Double, partitionToUpdate.Throughput);
                 command.Parameters.AddWithValue("@remaining", NpgsqlDbType.Bigint, partitionToUpdate.Remaining);
-                command.Parameters.AddWithValue("@is_split_requested", NpgsqlDbType.Boolean, partitionToUpdate.IsSplitRequested);
+                command.Parameters.AddWithValue("@split_requester", NpgsqlDbType.Varchar, COLUMN_PARTITION_OWNER_LENGTH, ((object) partitionToUpdate.SplitRequester) ?? DBNull.Value);
 
                 int affected = await command.ExecuteNonQueryAsync(cancellation);
 
@@ -640,6 +641,9 @@ namespace EXBP.Dipren.Data.Postgres
         /// <param name="jobId">
         ///   The unique identifier of the distributed processing job.
         /// </param>
+        /// <param name="requester">
+        ///   The unique identifier of the processing node trying to request a split.
+        /// </param>
         /// <param name="active">
         ///   A <see cref="DateTime"/> value that is used to determine whether a partition is being processed.
         /// </param>
@@ -655,9 +659,10 @@ namespace EXBP.Dipren.Data.Postgres
         /// <exception cref="UnknownIdentifierException">
         ///   A job with the specified unique identifier does not exist in the data store.
         /// </exception>
-        public async Task<bool> TryRequestSplitAsync(string jobId, DateTime active, CancellationToken cancellation)
+        public async Task<bool> TryRequestSplitAsync(string jobId, string requester, DateTime active, CancellationToken cancellation)
         {
             Assert.ArgumentIsNotNull(jobId, nameof(jobId));
+            Assert.ArgumentIsNotNull(requester, nameof(requester));
 
             bool result = false;
 
@@ -676,6 +681,7 @@ namespace EXBP.Dipren.Data.Postgres
                 DateTime uktsActive = DateTime.SpecifyKind(active, DateTimeKind.Unspecified);
 
                 command.Parameters.AddWithValue("@job_id", NpgsqlDbType.Char, COLUMN_JOB_NAME_LENGTH, jobId);
+                command.Parameters.AddWithValue("@requester", NpgsqlDbType.Char, COLUMN_PARTITION_OWNER_LENGTH, requester);
                 command.Parameters.AddWithValue("@active", NpgsqlDbType.Timestamp, uktsActive);
 
                 int affected = await command.ExecuteNonQueryAsync(cancellation);
@@ -693,6 +699,63 @@ namespace EXBP.Dipren.Data.Postgres
                 transaction.Commit();
 
                 result = (affected > 0);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        ///   Determines whether a split request for the specified requester is still pending.
+        /// </summary>
+        /// <param name="jobId">
+        ///   The unique identifier of the distributed processing job.
+        /// </param>
+        /// <param name="requester">
+        ///   The unique identifier of the processing node that requested a split.
+        /// </param>
+        /// <param name="cancellation">
+        ///   The <see cref="CancellationToken"/> used to propagate notifications that the operation should be
+        ///   canceled.
+        /// </param>
+        /// <returns>
+        ///   A <see cref="Task{TResult}"/> of <see cref="bool"/> object that represents the asynchronous
+        ///   operation. The <see cref="Task{TResult}.Result"/> property contains a value indicating whether a split
+        ///   request is pending.
+        /// </returns>
+        public async Task<bool> IsSplitRequestPendingAsync(string jobId, string requester, CancellationToken cancellation)
+        {
+            Assert.ArgumentIsNotNull(jobId, nameof(jobId));
+            Assert.ArgumentIsNotNull(requester, nameof(requester));
+
+            bool result = false;
+
+            await using (NpgsqlConnection connection = await this._dataSource.OpenConnectionAsync(cancellation))
+            {
+                await using NpgsqlCommand command = new NpgsqlCommand
+                {
+                    CommandText = PostgresEngineDataStoreImplementationResources.QueryIsSplitRequestPending,
+                    CommandType = CommandType.Text,
+                    Connection = connection
+                };
+
+                command.Parameters.AddWithValue("@job_id", NpgsqlDbType.Char, COLUMN_JOB_NAME_LENGTH, jobId);
+                command.Parameters.AddWithValue("@requester", NpgsqlDbType.Char, COLUMN_PARTITION_OWNER_LENGTH, requester);
+
+                await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync(cancellation))
+                {
+                    await reader.ReadAsync(cancellation);
+
+                    int jobs = reader.GetInt32("job_exists");
+
+                    if (jobs == 0)
+                    {
+                        this.RaiseErrorUnknownJobIdentifier();
+                    }
+
+                    int requests = reader.GetInt32("requests_exist");
+
+                    result = (requests > 0);
+                }
             }
 
             return result;
@@ -1130,7 +1193,7 @@ namespace EXBP.Dipren.Data.Postgres
             long remaining = reader.GetInt64("remaining");
             double throughput = reader.GetDouble("throughput");
             bool completed = reader.GetBoolean("is_completed");
-            bool split = reader.GetBoolean("is_split_requested");
+            string split = reader.GetNullableString("split_requester");
 
             Guid id = Guid.ParseExact(sid, "d");
 

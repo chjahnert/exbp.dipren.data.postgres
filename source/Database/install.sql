@@ -58,13 +58,13 @@ CREATE TABLE "dipren"."partitions"
   "remaining" BIGINT NOT NULL,
   "throughput" DOUBLE PRECISION NOT NULL,
   "is_completed" BOOLEAN NOT NULL,
-  "is_split_requested" BOOLEAN NOT NULL,
+  "split_requester" VARCHAR(256) NULL,
 
   CONSTRAINT "pk_partitions" PRIMARY KEY ("id"),
   CONSTRAINT "fk_partitions_to_job" FOREIGN KEY ("job_id") REFERENCES "dipren"."jobs"("id") ON UPDATE RESTRICT ON DELETE RESTRICT
 );
 
-CREATE INDEX "ix_partitions_by_job_id" ON "dipren"."partitions" ("job_id");
+CREATE INDEX "ix_partitions_by_job_id" ON "dipren"."partitions" ("job_id") INCLUDE ("split_requester");
 
 COMMENT ON COLUMN "dipren"."partitions"."id" IS 'The unique identifier of the partition.';
 COMMENT ON COLUMN "dipren"."partitions"."job_id" IS 'The unique identifier of the job the partition belongs to.';
@@ -80,6 +80,6 @@ COMMENT ON COLUMN "dipren"."partitions"."processed" IS 'The number of keys proce
 COMMENT ON COLUMN "dipren"."partitions"."remaining" IS 'The estimated number of keys left to process.';
 COMMENT ON COLUMN "dipren"."partitions"."throughput" IS 'The number of keys processed per second.';
 COMMENT ON COLUMN "dipren"."partitions"."is_completed" IS 'Indicates whether the entire partition has been processed.';
-COMMENT ON COLUMN "dipren"."partitions"."is_split_requested" IS 'Indicates whether a split has been requested.';
+COMMENT ON COLUMN "dipren"."partitions"."split_requester" IS 'The unique identifier of the processing node requesting the split';
 
 COMMENT ON INDEX "dipren"."ix_partitions_by_job_id" IS 'Use when an idle processing node tries to acquire a partition.';
