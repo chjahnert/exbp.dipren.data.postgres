@@ -741,9 +741,7 @@ namespace EXBP.Dipren.Data.Postgres
                 command.Parameters.AddWithValue("@job_id", NpgsqlDbType.Char, COLUMN_JOB_NAME_LENGTH, jobId);
                 command.Parameters.AddWithValue("@requester", NpgsqlDbType.Char, COLUMN_PARTITION_OWNER_LENGTH, requester);
 
-                int exists = (int) await command.ExecuteScalarAsync(cancellation);
-
-                result = (exists > 0);
+                result = (bool) await command.ExecuteScalarAsync(cancellation);
             }
 
             return result;

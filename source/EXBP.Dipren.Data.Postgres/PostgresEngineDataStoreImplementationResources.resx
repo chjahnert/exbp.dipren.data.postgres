@@ -210,7 +210,7 @@ VALUES
   </data>
   <data name="QueryIsSplitRequestPending" xml:space="preserve">
     <value>SELECT
-  COALESCE((SELECT 1 FROM "dipren"."partitions" WHERE ("job_id" = @job_id) AND ("split_requester" = @requester) LIMIT 1), 0) AS "requests_exist";</value>
+  COALESCE((SELECT TRUE FROM "dipren"."partitions" WHERE ("job_id" = @job_id) AND ("split_requester" = @requester) LIMIT 1), FALSE) AS "requests_exist";</value>
   </data>
   <data name="QueryMarkJobAsCompleted" xml:space="preserve">
     <value>UPDATE

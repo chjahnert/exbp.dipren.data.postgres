@@ -189,7 +189,7 @@ namespace EXBP.Dipren.Data.Postgres {
         
         /// <summary>
         ///   Looks up a localized string similar to SELECT
-        ///  COALESCE((SELECT 1 FROM &quot;dipren&quot;.&quot;partitions&quot; WHERE (&quot;job_id&quot; = @job_id) AND (&quot;split_requester&quot; = @requester) LIMIT 1), 0) AS &quot;requests_exist&quot;;.
+        ///  COALESCE((SELECT TRUE FROM &quot;dipren&quot;.&quot;partitions&quot; WHERE (&quot;job_id&quot; = @job_id) AND (&quot;split_requester&quot; = @requester) LIMIT 1), FALSE) AS &quot;requests_exist&quot;;.
         /// </summary>
         internal static string QueryIsSplitRequestPending {
             get {
