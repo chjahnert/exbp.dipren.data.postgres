@@ -741,21 +741,9 @@ namespace EXBP.Dipren.Data.Postgres
                 command.Parameters.AddWithValue("@job_id", NpgsqlDbType.Char, COLUMN_JOB_NAME_LENGTH, jobId);
                 command.Parameters.AddWithValue("@requester", NpgsqlDbType.Char, COLUMN_PARTITION_OWNER_LENGTH, requester);
 
-                await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync(cancellation))
-                {
-                    await reader.ReadAsync(cancellation);
+                int exists = (int) await command.ExecuteScalarAsync(cancellation);
 
-                    int jobs = reader.GetInt32("job_exists");
-
-                    if (jobs == 0)
-                    {
-                        this.RaiseErrorUnknownJobIdentifier();
-                    }
-
-                    int requests = reader.GetInt32("requests_exist");
-
-                    result = (requests > 0);
-                }
+                result = (exists > 0);
             }
 
             return result;
