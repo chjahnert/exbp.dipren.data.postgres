@@ -418,14 +418,11 @@ namespace EXBP.Dipren.Data.Postgres
 
             await using (NpgsqlConnection connection = await this._dataSource.OpenConnectionAsync(cancellation))
             {
-                await using NpgsqlTransaction transaction = await connection.BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellation);
-
                 await using NpgsqlCommand command = new NpgsqlCommand
                 {
                     CommandText = PostgresEngineDataStoreImplementationResources.QueryReportProgress,
                     CommandType = CommandType.Text,
-                    Connection = connection,
-                    Transaction = transaction
+                    Connection = connection
                 };
 
                 string sid = id.ToString("d");
@@ -448,23 +445,22 @@ namespace EXBP.Dipren.Data.Postgres
                     {
                         result = this.ReadPartition(reader);
                     }
-                }
-
-                if (result == null)
-                {
-                    bool exists = await this.DoesPartitionExistAsync(transaction, id, cancellation);
-
-                    if (exists == false)
-                    {
-                        this.RaiseErrorUnknownJobIdentifier();
-                    }
                     else
                     {
-                        this.RaiseErrorLockNoLongerHeld();
+                        await reader.NextResultAsync(cancellation);
+
+                        bool exists = await reader.ReadAsync(cancellation);
+
+                        if (exists == false)
+                        {
+                            this.RaiseErrorUnknownJobIdentifier();
+                        }
+                        else
+                        {
+                            this.RaiseErrorLockNoLongerHeld();
+                        }
                     }
                 }
-
-                transaction.Commit();
             }
 
             return result;

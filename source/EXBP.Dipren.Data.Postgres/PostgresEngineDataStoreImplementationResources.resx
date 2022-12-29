@@ -323,7 +323,14 @@ RETURNING
   "remaining" AS "remaining",
   "throughput" AS "throughput",
   "is_completed" AS "is_completed",
-  "split_requester" AS "split_requester";</value>
+  "split_requester" AS "split_requester";
+
+SELECT
+  TRUE
+FROM
+  "dipren"."partitions"
+WHERE
+  ("id" = @id);</value>
   </data>
   <data name="QueryRetrieveJobById" xml:space="preserve">
     <value>SELECT
