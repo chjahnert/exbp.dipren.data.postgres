@@ -402,7 +402,14 @@ WHERE
   ("id" = @id);</value>
   </data>
   <data name="QueryTryAcquirePartition" xml:space="preserve">
-    <value>WITH "candidate" AS
+    <value>SELECT
+  1
+FROM
+  "dipren"."jobs"
+WHERE
+  ("id" = @job_id);
+
+WITH "candidate" AS
 (
   SELECT
     "id"

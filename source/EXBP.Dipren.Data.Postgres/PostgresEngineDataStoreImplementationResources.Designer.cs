@@ -405,7 +405,14 @@ namespace EXBP.Dipren.Data.Postgres {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WITH &quot;candidate&quot; AS
+        ///   Looks up a localized string similar to SELECT
+        ///  1
+        ///FROM
+        ///  &quot;dipren&quot;.&quot;jobs&quot;
+        ///WHERE
+        ///  (&quot;id&quot; = @job_id);
+        ///
+        ///WITH &quot;candidate&quot; AS
         ///(
         ///  SELECT
         ///    &quot;id&quot;
@@ -430,10 +437,7 @@ namespace EXBP.Dipren.Data.Postgres {
         ///FROM
         ///  &quot;candidate&quot;
         ///WHERE
-        ///  (&quot;target&quot;.&quot;id&quot; = &quot;candidate&quot;.&quot;id&quot;)
-        ///RETURNING
-        ///  &quot;target&quot;.&quot;id&quot; AS &quot;id&quot;,
-        ///  &quot;job_id&quot;  [rest of string was truncated]&quot;;.
+        ///  (&quot;target&quot;.&quot;id&quot; = [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string QueryTryAcquirePartition {
             get {

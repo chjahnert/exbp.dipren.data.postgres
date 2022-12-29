@@ -591,14 +591,11 @@ namespace EXBP.Dipren.Data.Postgres
 
             await using (NpgsqlConnection connection = await this._dataSource.OpenConnectionAsync(cancellation))
             {
-                await using NpgsqlTransaction transaction = await connection.BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellation);
-
                 await using NpgsqlCommand command = new NpgsqlCommand
                 {
                     CommandText = PostgresEngineDataStoreImplementationResources.QueryTryAcquirePartition,
                     CommandType = CommandType.Text,
-                    Connection = connection,
-                    Transaction = transaction
+                    Connection = connection
                 };
 
                 DateTime uktsTimestamp = DateTime.SpecifyKind(timestamp, DateTimeKind.Unspecified);
@@ -611,6 +608,15 @@ namespace EXBP.Dipren.Data.Postgres
 
                 await using (DbDataReader reader = await command.ExecuteReaderAsync(cancellation))
                 {
+                    bool exists = await reader.ReadAsync(cancellation);
+
+                    if (exists == false)
+                    {
+                        this.RaiseErrorUnknownJobIdentifier();
+                    }
+
+                    await reader.NextResultAsync(cancellation);
+
                     bool found = await reader.ReadAsync(cancellation);
 
                     if (found == true)
@@ -618,18 +624,6 @@ namespace EXBP.Dipren.Data.Postgres
                         result = this.ReadPartition(reader);
                     }
                 }
-
-                if (result == null)
-                {
-                    bool exists = await this.DoesJobExistAsync(transaction, jobId, cancellation);
-
-                    if (exists == false)
-                    {
-                        this.RaiseErrorUnknownJobIdentifier();
-                    }
-                }
-
-                transaction.Commit();
             }
 
             return result;
