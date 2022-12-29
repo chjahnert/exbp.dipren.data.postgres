@@ -1036,42 +1036,6 @@ namespace EXBP.Dipren.Data.Postgres
         }
 
         /// <summary>
-        ///   Determines if a job with the specified unique identifier exists.
-        /// </summary>
-        /// <param name="transaction">
-        ///   The transaction to participate in.
-        /// </param>
-        /// <param name="id">
-        ///   The unique identifier of the job to check.
-        /// </param>
-        /// <param name="cancellation">
-        ///   The <see cref="CancellationToken"/> used to propagate notifications that the operation should be
-        ///   canceled.
-        /// </param>
-        /// <returns>
-        ///   A <see cref="Task{TResult}"/> of <see cref="bool"/> object that represents the asynchronous
-        ///   operation.
-        /// </returns>
-        private async Task<bool> DoesJobExistAsync(NpgsqlTransaction transaction, string id, CancellationToken cancellation)
-        {
-            Debug.Assert(id != null);
-
-            await using NpgsqlCommand command = new NpgsqlCommand
-            {
-                CommandText = PostgresEngineDataStoreImplementationResources.QueryDoesJobExist,
-                CommandType = CommandType.Text,
-                Connection = transaction.Connection,
-                Transaction = transaction
-            };
-
-            command.Parameters.AddWithValue("@id", NpgsqlDbType.Char, COLUMN_JOB_NAME_LENGTH, id);
-
-            long count = (long) await command.ExecuteScalarAsync(cancellation);
-
-            return (count > 0);
-        }
-
-        /// <summary>
         ///   Determines if a partition with the specified unique identifier exists.
         /// </summary>
         /// <param name="transaction">
