@@ -452,7 +452,14 @@ RETURNING
   "split_requester" AS "split_requester";</value>
   </data>
   <data name="QueryTryRequestSplit" xml:space="preserve">
-    <value>WITH "candidate" AS
+    <value>SELECT
+  1
+FROM
+  "dipren"."jobs"
+WHERE
+  ("id" = @job_id);
+
+WITH "candidate" AS
 (
   SELECT
     "id"
