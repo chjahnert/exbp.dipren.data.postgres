@@ -418,14 +418,11 @@ namespace EXBP.Dipren.Data.Postgres
 
             await using (NpgsqlConnection connection = await this._dataSource.OpenConnectionAsync(cancellation))
             {
-                await using NpgsqlTransaction transaction = await connection.BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellation);
-
                 await using NpgsqlCommand command = new NpgsqlCommand
                 {
                     CommandText = PostgresEngineDataStoreImplementationResources.QueryReportProgress,
                     CommandType = CommandType.Text,
-                    Connection = connection,
-                    Transaction = transaction
+                    Connection = connection
                 };
 
                 string sid = id.ToString("d");
@@ -448,23 +445,22 @@ namespace EXBP.Dipren.Data.Postgres
                     {
                         result = this.ReadPartition(reader);
                     }
-                }
-
-                if (result == null)
-                {
-                    bool exists = await this.DoesPartitionExistAsync(transaction, id, cancellation);
-
-                    if (exists == false)
-                    {
-                        this.RaiseErrorUnknownJobIdentifier();
-                    }
                     else
                     {
-                        this.RaiseErrorLockNoLongerHeld();
+                        await reader.NextResultAsync(cancellation);
+
+                        bool exists = await reader.ReadAsync(cancellation);
+
+                        if (exists == false)
+                        {
+                            this.RaiseErrorUnknownJobIdentifier();
+                        }
+                        else
+                        {
+                            this.RaiseErrorLockNoLongerHeld();
+                        }
                     }
                 }
-
-                transaction.Commit();
             }
 
             return result;
@@ -591,14 +587,11 @@ namespace EXBP.Dipren.Data.Postgres
 
             await using (NpgsqlConnection connection = await this._dataSource.OpenConnectionAsync(cancellation))
             {
-                await using NpgsqlTransaction transaction = await connection.BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellation);
-
                 await using NpgsqlCommand command = new NpgsqlCommand
                 {
                     CommandText = PostgresEngineDataStoreImplementationResources.QueryTryAcquirePartition,
                     CommandType = CommandType.Text,
-                    Connection = connection,
-                    Transaction = transaction
+                    Connection = connection
                 };
 
                 DateTime uktsTimestamp = DateTime.SpecifyKind(timestamp, DateTimeKind.Unspecified);
@@ -611,6 +604,15 @@ namespace EXBP.Dipren.Data.Postgres
 
                 await using (DbDataReader reader = await command.ExecuteReaderAsync(cancellation))
                 {
+                    bool exists = await reader.ReadAsync(cancellation);
+
+                    if (exists == false)
+                    {
+                        this.RaiseErrorUnknownJobIdentifier();
+                    }
+
+                    await reader.NextResultAsync(cancellation);
+
                     bool found = await reader.ReadAsync(cancellation);
 
                     if (found == true)
@@ -618,18 +620,6 @@ namespace EXBP.Dipren.Data.Postgres
                         result = this.ReadPartition(reader);
                     }
                 }
-
-                if (result == null)
-                {
-                    bool exists = await this.DoesJobExistAsync(transaction, jobId, cancellation);
-
-                    if (exists == false)
-                    {
-                        this.RaiseErrorUnknownJobIdentifier();
-                    }
-                }
-
-                transaction.Commit();
             }
 
             return result;
@@ -668,14 +658,11 @@ namespace EXBP.Dipren.Data.Postgres
 
             await using (NpgsqlConnection connection = await this._dataSource.OpenConnectionAsync(cancellation))
             {
-                await using NpgsqlTransaction transaction = await connection.BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellation);
-
                 await using NpgsqlCommand command = new NpgsqlCommand
                 {
                     CommandText = PostgresEngineDataStoreImplementationResources.QueryTryRequestSplit,
                     CommandType = CommandType.Text,
-                    Connection = connection,
-                    Transaction = transaction
+                    Connection = connection
                 };
 
                 DateTime uktsActive = DateTime.SpecifyKind(active, DateTimeKind.Unspecified);
@@ -684,19 +671,21 @@ namespace EXBP.Dipren.Data.Postgres
                 command.Parameters.AddWithValue("@requester", NpgsqlDbType.Char, COLUMN_PARTITION_OWNER_LENGTH, requester);
                 command.Parameters.AddWithValue("@active", NpgsqlDbType.Timestamp, uktsActive);
 
-                int affected = await command.ExecuteNonQueryAsync(cancellation);
+                int affected = -1;
 
-                if (affected == 0)
+                await using (NpgsqlDataReader reader = await command.ExecuteReaderAsync(cancellation))
                 {
-                    bool exists = await this.DoesJobExistAsync(transaction, jobId, cancellation);
+                    bool exists = await reader.ReadAsync(cancellation);
 
                     if (exists == false)
                     {
                         this.RaiseErrorUnknownJobIdentifier();
                     }
-                }
 
-                transaction.Commit();
+                    await reader.NextResultAsync(cancellation);
+
+                    affected = reader.RecordsAffected;
+                }
 
                 result = (affected > 0);
             }
@@ -1040,42 +1029,6 @@ namespace EXBP.Dipren.Data.Postgres
             }
 
             return result;
-        }
-
-        /// <summary>
-        ///   Determines if a job with the specified unique identifier exists.
-        /// </summary>
-        /// <param name="transaction">
-        ///   The transaction to participate in.
-        /// </param>
-        /// <param name="id">
-        ///   The unique identifier of the job to check.
-        /// </param>
-        /// <param name="cancellation">
-        ///   The <see cref="CancellationToken"/> used to propagate notifications that the operation should be
-        ///   canceled.
-        /// </param>
-        /// <returns>
-        ///   A <see cref="Task{TResult}"/> of <see cref="bool"/> object that represents the asynchronous
-        ///   operation.
-        /// </returns>
-        private async Task<bool> DoesJobExistAsync(NpgsqlTransaction transaction, string id, CancellationToken cancellation)
-        {
-            Debug.Assert(id != null);
-
-            await using NpgsqlCommand command = new NpgsqlCommand
-            {
-                CommandText = PostgresEngineDataStoreImplementationResources.QueryDoesJobExist,
-                CommandType = CommandType.Text,
-                Connection = transaction.Connection,
-                Transaction = transaction
-            };
-
-            command.Parameters.AddWithValue("@id", NpgsqlDbType.Char, COLUMN_JOB_NAME_LENGTH, id);
-
-            long count = (long) await command.ExecuteScalarAsync(cancellation);
-
-            return (count > 0);
         }
 
         /// <summary>
