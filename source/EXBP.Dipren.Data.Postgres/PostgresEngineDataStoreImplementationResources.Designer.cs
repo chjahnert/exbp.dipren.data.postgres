@@ -61,9 +61,13 @@ namespace EXBP.Dipren.Data.Postgres {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT
+        ///   Looks up a localized string similar to START TRANSACTION ISOLATION LEVEL READ COMMITTED READ ONLY;
+        ///
+        ///SELECT
         ///  (SELECT COUNT(1) FROM &quot;dipren&quot;.&quot;jobs&quot; WHERE (&quot;id&quot; = @job_id)) AS &quot;job_count&quot;,
-        ///  (SELECT COUNT(1) FROM &quot;dipren&quot;.&quot;partitions&quot; WHERE (&quot;job_id&quot; = @job_id) AND (&quot;is_completed&quot; = FALSE)) AS &quot;partition_count&quot;;.
+        ///  (SELECT COUNT(1) FROM &quot;dipren&quot;.&quot;partitions&quot; WHERE (&quot;job_id&quot; = @job_id) AND (&quot;is_completed&quot; = FALSE)) AS &quot;partition_count&quot;;
+        ///
+        ///COMMIT;.
         /// </summary>
         internal static string QueryCountIncompletePartitions {
             get {
@@ -72,10 +76,14 @@ namespace EXBP.Dipren.Data.Postgres {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT
+        ///   Looks up a localized string similar to START TRANSACTION ISOLATION LEVEL READ COMMITTED READ ONLY;
+        ///
+        ///SELECT
         ///  COUNT(1) AS &quot;count&quot;
         ///FROM
-        ///  &quot;dipren&quot;.&quot;jobs&quot;;.
+        ///  &quot;dipren&quot;.&quot;jobs&quot;;
+        ///
+        ///COMMIT;.
         /// </summary>
         internal static string QueryCountJobs {
             get {
@@ -84,26 +92,16 @@ namespace EXBP.Dipren.Data.Postgres {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT
-        ///  COUNT(1) AS &quot;count&quot;
-        ///FROM
-        ///  &quot;dipren&quot;.&quot;jobs&quot;
-        ///WHERE
-        ///  (&quot;id&quot; = @id);.
-        /// </summary>
-        internal static string QueryDoesJobExist {
-            get {
-                return ResourceManager.GetString("QueryDoesJobExist", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SELECT
+        ///   Looks up a localized string similar to START TRANSACTION ISOLATION LEVEL READ COMMITTED READ ONLY;
+        ///
+        ///SELECT
         ///  COUNT(1) AS &quot;count&quot;
         ///FROM
         ///  &quot;dipren&quot;.&quot;partitions&quot;
         ///WHERE
-        ///  (&quot;id&quot; = @id);.
+        ///  (&quot;id&quot; = @id);
+        ///
+        ///COMMIT;.
         /// </summary>
         internal static string QueryDoesPartitionExist {
             get {
@@ -188,8 +186,12 @@ namespace EXBP.Dipren.Data.Postgres {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT
-        ///  COALESCE((SELECT TRUE FROM &quot;dipren&quot;.&quot;partitions&quot; WHERE (&quot;job_id&quot; = @job_id) AND (&quot;split_requester&quot; = @requester) LIMIT 1), FALSE) AS &quot;requests_exist&quot;;.
+        ///   Looks up a localized string similar to START TRANSACTION ISOLATION LEVEL READ COMMITTED READ ONLY;
+        ///
+        ///SELECT
+        ///  COALESCE((SELECT TRUE FROM &quot;dipren&quot;.&quot;partitions&quot; WHERE (&quot;job_id&quot; = @job_id) AND (&quot;split_requester&quot; = @requester) LIMIT 1), FALSE) AS &quot;requests_exist&quot;;
+        ///
+        ///COMMIT;.
         /// </summary>
         internal static string QueryIsSplitRequestPending {
             get {
@@ -305,7 +307,9 @@ namespace EXBP.Dipren.Data.Postgres {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UPDATE
+        ///   Looks up a localized string similar to START TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+        ///
+        ///UPDATE
         ///  &quot;dipren&quot;.&quot;partitions&quot;
         ///SET
         ///  &quot;updated&quot; = @updated,
@@ -323,9 +327,7 @@ namespace EXBP.Dipren.Data.Postgres {
         ///  &quot;job_id&quot; AS &quot;job_id&quot;,
         ///  &quot;created&quot; AS &quot;created&quot;,
         ///  &quot;updated&quot; AS &quot;updated&quot;,
-        ///  &quot;owner&quot; AS &quot;owner&quot;,
-        ///  &quot;first&quot; AS &quot;first&quot;,
-        ///  &quot;last&quot; AS [rest of string was truncated]&quot;;.
+        ///  &quot; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string QueryReportProgress {
             get {
@@ -357,7 +359,9 @@ namespace EXBP.Dipren.Data.Postgres {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT
+        ///   Looks up a localized string similar to START TRANSACTION ISOLATION LEVEL READ COMMITTED READ ONLY;
+        ///
+        ///SELECT
         ///  t1.&quot;id&quot; AS &quot;id&quot;,
         ///  t1.&quot;created&quot; AS &quot;created&quot;,
         ///  t1.&quot;updated&quot; AS &quot;updated&quot;,
@@ -369,7 +373,7 @@ namespace EXBP.Dipren.Data.Postgres {
         ///  t1.&quot;state&quot; AS &quot;state&quot;,
         ///  t1.&quot;error&quot; AS &quot;error&quot;,
         ///  COUNT(1) FILTER (WHERE (t2.&quot;is_completed&quot; = FALSE) AND (t2.&quot;owner&quot; IS NULL) AND (t2.&quot;processed&quot; = 0)) AS &quot;partitons_untouched&quot;,
-        ///  COUNT(1) FILTER (WHERE (t2.&quot;is_completed&quot; = FALSE) AND ((t2.&quot;owner&quot; IS  [rest of string was truncated]&quot;;.
+        ///  COUNT(1) [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string QueryRetrieveJobStatusReport {
             get {
@@ -378,7 +382,9 @@ namespace EXBP.Dipren.Data.Postgres {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT
+        ///   Looks up a localized string similar to START TRANSACTION ISOLATION LEVEL READ COMMITTED READ ONLY;
+        ///
+        ///SELECT
         ///  &quot;id&quot; AS &quot;id&quot;,
         ///  &quot;job_id&quot; AS &quot;job_id&quot;,
         ///  &quot;created&quot; AS &quot;created&quot;,
@@ -396,7 +402,7 @@ namespace EXBP.Dipren.Data.Postgres {
         ///FROM
         ///  &quot;dipren&quot;.&quot;partitions&quot;
         ///WHERE
-        ///  (&quot;id&quot; = @id);.
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string QueryRetrievePartitionById {
             get {

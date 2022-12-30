@@ -118,31 +118,35 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="QueryCountIncompletePartitions" xml:space="preserve">
-    <value>SELECT
+    <value>START TRANSACTION ISOLATION LEVEL READ COMMITTED READ ONLY;
+
+SELECT
   (SELECT COUNT(1) FROM "dipren"."jobs" WHERE ("id" = @job_id)) AS "job_count",
-  (SELECT COUNT(1) FROM "dipren"."partitions" WHERE ("job_id" = @job_id) AND ("is_completed" = FALSE)) AS "partition_count";</value>
+  (SELECT COUNT(1) FROM "dipren"."partitions" WHERE ("job_id" = @job_id) AND ("is_completed" = FALSE)) AS "partition_count";
+
+COMMIT;</value>
   </data>
   <data name="QueryCountJobs" xml:space="preserve">
-    <value>SELECT
+    <value>START TRANSACTION ISOLATION LEVEL READ COMMITTED READ ONLY;
+
+SELECT
   COUNT(1) AS "count"
 FROM
-  "dipren"."jobs";</value>
-  </data>
-  <data name="QueryDoesJobExist" xml:space="preserve">
-    <value>SELECT
-  COUNT(1) AS "count"
-FROM
-  "dipren"."jobs"
-WHERE
-  ("id" = @id);</value>
+  "dipren"."jobs";
+
+COMMIT;</value>
   </data>
   <data name="QueryDoesPartitionExist" xml:space="preserve">
-    <value>SELECT
+    <value>START TRANSACTION ISOLATION LEVEL READ COMMITTED READ ONLY;
+
+SELECT
   COUNT(1) AS "count"
 FROM
   "dipren"."partitions"
 WHERE
-  ("id" = @id);</value>
+  ("id" = @id);
+
+COMMIT;</value>
   </data>
   <data name="QueryInsertJob" xml:space="preserve">
     <value>INSERT INTO "dipren"."jobs"
@@ -209,8 +213,12 @@ VALUES
 );</value>
   </data>
   <data name="QueryIsSplitRequestPending" xml:space="preserve">
-    <value>SELECT
-  COALESCE((SELECT TRUE FROM "dipren"."partitions" WHERE ("job_id" = @job_id) AND ("split_requester" = @requester) LIMIT 1), FALSE) AS "requests_exist";</value>
+    <value>START TRANSACTION ISOLATION LEVEL READ COMMITTED READ ONLY;
+
+SELECT
+  COALESCE((SELECT TRUE FROM "dipren"."partitions" WHERE ("job_id" = @job_id) AND ("split_requester" = @requester) LIMIT 1), FALSE) AS "requests_exist";
+
+COMMIT;</value>
   </data>
   <data name="QueryMarkJobAsCompleted" xml:space="preserve">
     <value>UPDATE
@@ -296,7 +304,9 @@ RETURNING
   "error" AS "error";</value>
   </data>
   <data name="QueryReportProgress" xml:space="preserve">
-    <value>UPDATE
+    <value>START TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+
+UPDATE
   "dipren"."partitions"
 SET
   "updated" = @updated,
@@ -326,11 +336,13 @@ RETURNING
   "split_requester" AS "split_requester";
 
 SELECT
-  TRUE
+  TRUE AS "exists"
 FROM
   "dipren"."partitions"
 WHERE
-  ("id" = @id);</value>
+  ("id" = @id);
+
+COMMIT;</value>
   </data>
   <data name="QueryRetrieveJobById" xml:space="preserve">
     <value>SELECT
@@ -350,7 +362,9 @@ WHERE
   ("id" = @id);</value>
   </data>
   <data name="QueryRetrieveJobStatusReport" xml:space="preserve">
-    <value>SELECT
+    <value>START TRANSACTION ISOLATION LEVEL READ COMMITTED READ ONLY;
+
+SELECT
   t1."id" AS "id",
   t1."created" AS "created",
   t1."updated" AS "updated",
@@ -385,10 +399,14 @@ GROUP BY
   t1."started",
   t1."completed",
   t1."state",
-  t1."error";</value>
+  t1."error";
+
+COMMIT;</value>
   </data>
   <data name="QueryRetrievePartitionById" xml:space="preserve">
-    <value>SELECT
+    <value>START TRANSACTION ISOLATION LEVEL READ COMMITTED READ ONLY;
+
+SELECT
   "id" AS "id",
   "job_id" AS "job_id",
   "created" AS "created",
@@ -406,7 +424,9 @@ GROUP BY
 FROM
   "dipren"."partitions"
 WHERE
-  ("id" = @id);</value>
+  ("id" = @id);
+
+COMMIT;</value>
   </data>
   <data name="QueryTryAcquirePartition" xml:space="preserve">
     <value>SELECT
