@@ -453,7 +453,7 @@ namespace EXBP.Dipren.Data.Postgres
 
                         if (exists == false)
                         {
-                            this.RaiseErrorUnknownJobIdentifier();
+                            this.RaiseErrorUnknownPartitionIdentifier();
                         }
                         else
                         {
