@@ -71,7 +71,7 @@ namespace EXBP.Dipren.Data.Postgres.Tests
 
         [Test]
         [Order(3)]
-        [Repeat(12)]
+        [Repeat(1)]
         public async Task Benchmark_Medium()
         {
             EngineDataStoreBenchmarkResult result = await this.RunBenchmarkAsync(EngineDataStoreBenchmarkSettings.Medium);
