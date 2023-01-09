@@ -1,6 +1,4 @@
 ﻿
-using System.Globalization;
-
 using EXBP.Dipren.Data.Tests;
 
 using Npgsql;
@@ -14,6 +12,8 @@ namespace EXBP.Dipren.Data.Postgres.Tests
     [TestFixture]
     internal class PostgresEngineDataStoreBenchmark
     {
+        private const string REPORT_DIRECTORY = "../benchmarks/";
+
         protected NpgsqlDataSource DataSource { get; }
 
 
@@ -50,11 +50,11 @@ namespace EXBP.Dipren.Data.Postgres.Tests
         [Repeat(1)]
         public async Task Benchmark_Tiny()
         {
-            EngineDataStoreBenchmarkResult result = await this.RunBenchmarkAsync(EngineDataStoreBenchmarkSettings.Tiny);
+            EngineDataStoreBenchmarkRecording recording = await this.RunBenchmarkAsync(EngineDataStoreBenchmarkSettings.Tiny);
 
-            TestContext.WriteLine($"{result.Duration.TotalSeconds}");
+            await EngineDataStoreBenchmarkReport.GenerateAsync(REPORT_DIRECTORY, recording);
 
-            string csv = await this.FormatSnapshotsAsync(result);
+            TestContext.WriteLine($"{recording.Duration.TotalSeconds}");
         }
 
         [Test]
@@ -62,11 +62,11 @@ namespace EXBP.Dipren.Data.Postgres.Tests
         [Repeat(1)]
         public async Task Benchmark_Small()
         {
-            EngineDataStoreBenchmarkResult result = await this.RunBenchmarkAsync(EngineDataStoreBenchmarkSettings.Small);
+            EngineDataStoreBenchmarkRecording recording = await this.RunBenchmarkAsync(EngineDataStoreBenchmarkSettings.Small);
 
-            TestContext.WriteLine($"{result.Duration.TotalSeconds}");
+            await EngineDataStoreBenchmarkReport.GenerateAsync(REPORT_DIRECTORY, recording);
 
-            string csv = await this.FormatSnapshotsAsync(result);
+            TestContext.WriteLine($"{recording.Duration.TotalSeconds}");
         }
 
         [Test]
@@ -74,11 +74,11 @@ namespace EXBP.Dipren.Data.Postgres.Tests
         [Repeat(1)]
         public async Task Benchmark_Medium()
         {
-            EngineDataStoreBenchmarkResult result = await this.RunBenchmarkAsync(EngineDataStoreBenchmarkSettings.Medium);
+            EngineDataStoreBenchmarkRecording recording = await this.RunBenchmarkAsync(EngineDataStoreBenchmarkSettings.Medium);
 
-            TestContext.WriteLine($"{result.Duration.TotalSeconds}");
+            await EngineDataStoreBenchmarkReport.GenerateAsync(REPORT_DIRECTORY, recording);
 
-            string csv = await this.FormatSnapshotsAsync(result);
+            TestContext.WriteLine($"{recording.Duration.TotalSeconds}");
         }
 
         [Test]
@@ -86,11 +86,11 @@ namespace EXBP.Dipren.Data.Postgres.Tests
         [Repeat(1)]
         public async Task Benchmark_Large()
         {
-            EngineDataStoreBenchmarkResult result = await this.RunBenchmarkAsync(EngineDataStoreBenchmarkSettings.Large);
+            EngineDataStoreBenchmarkRecording recording = await this.RunBenchmarkAsync(EngineDataStoreBenchmarkSettings.Large);
 
-            TestContext.WriteLine($"{result.Duration.TotalSeconds}");
+            await EngineDataStoreBenchmarkReport.GenerateAsync(REPORT_DIRECTORY, recording);
 
-            string csv = await this.FormatSnapshotsAsync(result);
+            TestContext.WriteLine($"{recording.Duration.TotalSeconds}");
         }
 
         [Test]
@@ -98,34 +98,23 @@ namespace EXBP.Dipren.Data.Postgres.Tests
         [Repeat(1)]
         public async Task Benchmark_Huge()
         {
-            EngineDataStoreBenchmarkResult result = await this.RunBenchmarkAsync(EngineDataStoreBenchmarkSettings.Huge);
+            EngineDataStoreBenchmarkRecording recording = await this.RunBenchmarkAsync(EngineDataStoreBenchmarkSettings.Huge);
 
-            TestContext.WriteLine($"{result.Duration.TotalSeconds}");
+            await EngineDataStoreBenchmarkReport.GenerateAsync(REPORT_DIRECTORY, recording);
 
-            string csv = await this.FormatSnapshotsAsync(result);
+            TestContext.WriteLine($"{recording.Duration.TotalSeconds}");
         }
 
 
-        private async Task<EngineDataStoreBenchmarkResult> RunBenchmarkAsync(EngineDataStoreBenchmarkSettings settings)
+        private async Task<EngineDataStoreBenchmarkRecording> RunBenchmarkAsync(EngineDataStoreBenchmarkSettings settings)
         {
             IEngineDataStoreFactory factory = new PostgresEngineDataStoreFactory(Database.ConnectionString);
             EngineDataStoreBenchmark benchmark = new EngineDataStoreBenchmark(factory, settings);
 
-            EngineDataStoreBenchmarkResult result = await benchmark.RunAsync();
+            EngineDataStoreBenchmarkRecording result = await benchmark.RunAsync();
 
             Assert.That(result.Missed, Is.Zero);
             Warn.Unless(result.Errors, Is.Zero, "{0} errors were reported during processing.", result.Errors);
-
-            return result;
-        }
-
-        private async Task<string> FormatSnapshotsAsync(EngineDataStoreBenchmarkResult source)
-        {
-            await using StringWriter writer = new StringWriter(CultureInfo.InvariantCulture);
-
-            await source.SaveSnapshotsAsync(writer, true);
-
-            string result = writer.ToString();
 
             return result;
         }
