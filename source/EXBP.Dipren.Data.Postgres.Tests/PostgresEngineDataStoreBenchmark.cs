@@ -114,7 +114,7 @@ namespace EXBP.Dipren.Data.Postgres.Tests
             EngineDataStoreBenchmarkRecording result = await benchmark.RunAsync();
 
             Assert.That(result.Missed, Is.Zero);
-            Warn.Unless(result.Errors, Is.Zero, "{0} errors were reported during processing.", result.Errors);
+            Warn.Unless(result.Errors, Is.Zero, $"{result.Errors} errors were reported during processing.");
 
             return result;
         }
