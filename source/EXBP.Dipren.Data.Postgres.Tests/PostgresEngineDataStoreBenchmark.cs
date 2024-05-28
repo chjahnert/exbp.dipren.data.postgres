@@ -25,12 +25,6 @@ namespace EXBP.Dipren.Data.Postgres.Tests
         }
 
 
-        public void Dispose()
-        {
-            this.DataSource.Dispose();
-        }
-
-
         [SetUp]
         public async Task BeforeEachTestCaseAsync()
         {
@@ -42,6 +36,8 @@ namespace EXBP.Dipren.Data.Postgres.Tests
         public async Task AfterTestFixtureAsync()
         {
             await Database.DropDatabaseSchemaAsync(this.DataSource, CancellationToken.None);
+
+            this.DataSource.Dispose();
         }
 
 
