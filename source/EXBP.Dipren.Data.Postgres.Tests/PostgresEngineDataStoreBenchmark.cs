@@ -50,7 +50,7 @@ namespace EXBP.Dipren.Data.Postgres.Tests
 
             await EngineDataStoreBenchmarkReport.GenerateAsync(REPORT_DIRECTORY, recording);
 
-            TestContext.WriteLine($"{recording.Duration.TotalSeconds}");
+            TestContext.Out.WriteLine($"{recording.Duration.TotalSeconds}");
         }
 
         [Test]
@@ -62,7 +62,7 @@ namespace EXBP.Dipren.Data.Postgres.Tests
 
             await EngineDataStoreBenchmarkReport.GenerateAsync(REPORT_DIRECTORY, recording);
 
-            TestContext.WriteLine($"{recording.Duration.TotalSeconds}");
+            TestContext.Out.WriteLine($"{recording.Duration.TotalSeconds}");
         }
 
         [Test]
@@ -74,7 +74,7 @@ namespace EXBP.Dipren.Data.Postgres.Tests
 
             await EngineDataStoreBenchmarkReport.GenerateAsync(REPORT_DIRECTORY, recording);
 
-            TestContext.WriteLine($"{recording.Duration.TotalSeconds}");
+            TestContext.Out.WriteLine($"{recording.Duration.TotalSeconds}");
         }
 
         [Test]
@@ -86,7 +86,7 @@ namespace EXBP.Dipren.Data.Postgres.Tests
 
             await EngineDataStoreBenchmarkReport.GenerateAsync(REPORT_DIRECTORY, recording);
 
-            TestContext.WriteLine($"{recording.Duration.TotalSeconds}");
+            TestContext.Out.WriteLine($"{recording.Duration.TotalSeconds}");
         }
 
         [Test]
@@ -98,7 +98,7 @@ namespace EXBP.Dipren.Data.Postgres.Tests
 
             await EngineDataStoreBenchmarkReport.GenerateAsync(REPORT_DIRECTORY, recording);
 
-            TestContext.WriteLine($"{recording.Duration.TotalSeconds}");
+            TestContext.Out.WriteLine($"{recording.Duration.TotalSeconds}");
         }
 
 
