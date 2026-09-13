@@ -85,7 +85,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   The name of the column.
         /// </param>
         /// <returns>
-        ///   The <see cref="DateTime"/> value in the specified column; or <see langword="null"/> if not set.
+        ///   The <see cref="long"/> value in the specified column; or <see langword="null"/> if not set.
         /// </returns>
         /// <exception cref="ArgumentNullException">
         ///   Argument <paramref name="reader"/> is a <see langword="null"/> reference.

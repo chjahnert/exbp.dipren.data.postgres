@@ -6,22 +6,22 @@ using EXBP.Dipren.Resilience;
 namespace EXBP.Dipren.Data.Postgres
 {
     /// <summary>
-    ///   Implements an <see cref="IEngineDataStore"/> that uses Postgres SQL as its storage engine. and uses a backoff
+    ///   Implements an <see cref="IEngineDataStore"/> that uses PostgreSQL as its storage engine and uses a backoff
     ///   retry policy for resilience. The default retry strategy uses an exponential backoff delay.
     /// </summary>
     /// <remarks>
     ///   <para>
     ///     The <see cref="PostgresEngineDataStore"/> implements a retry mechanism for resilience against transient
-    ///     errors. The built in retry mechanism uses an exponential backoff retry strategy that retries operations
+    ///     errors. The built-in retry mechanism uses an exponential backoff retry strategy that retries operations
     ///     failing due to transient errors up to 12 times with exponentially growing wait times between each attempt.
     ///     It starts with 5 milliseconds, then 10, 20, 40, 80, and so on up to a maximum of 12 retry attempts. This
     ///     adds up to about 20 seconds in total before the operation is failed permanently.
     ///   </para>
     ///   <para>
-    ///     In case the built in retry mechanism does not meet your needs, you can inject you can implement your own
-    ///     retry strategy either from scratch or use an external framework such as
+    ///     If the built-in retry mechanism does not meet your needs, you can inject your own retry strategy, either
+    ///     implemented from scratch or provided by an external framework such as
     ///     <see href="http://www.thepollyproject.org/">The Polly Project</see>. An example is provided in the
-    ///     <see href="http://documentation">documentation</see>.
+    ///     <see href="https://github.com/chjahnert/exbp.dipren.data.postgres/wiki">documentation</see>.
     ///   </para>
     ///   <para>
     ///     The database schema has to be deployed before using this class.
