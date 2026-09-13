@@ -49,7 +49,7 @@
 
   <ItemGroup>
     <PackageReference Include="EXBP.Dipren" Version="1.1.0" />
-    <PackageReference Include="Npgsql" Version="9.0.2" />
+    <PackageReference Include="Npgsql" Version="10.0.3" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="11.0.100-rc.1.26425.128" PrivateAssets="All" />
   </ItemGroup>
 
