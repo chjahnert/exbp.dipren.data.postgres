@@ -13,7 +13,7 @@ using NpgsqlTypes;
 namespace EXBP.Dipren.Data.Postgres
 {
     /// <summary>
-    ///   Implements an <see cref="IEngineDataStore"/> that uses Postgres SQL as its storage engine.
+    ///   Implements an <see cref="IEngineDataStore"/> that uses PostgreSQL as its storage engine.
     /// </summary>
     /// <remarks>
     ///   The implementation assumes that the required schema and table structure is already deployed.
@@ -85,7 +85,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   canceled.
         /// </param>
         /// <returns>
-        ///   A <see cref="Task{TResult}"/> or <see cref="long"/> that represents the asynchronous operation and can
+        ///   A <see cref="Task{TResult}"/> of <see cref="long"/> that represents the asynchronous operation and can
         ///   be used to access the result.
         /// </returns>
         public async Task<long> CountJobsAsync(CancellationToken cancellation)
@@ -108,7 +108,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   canceled.
         /// </param>
         /// <returns>
-        ///   A <see cref="Task{TResult}"/> or <see cref="long"/> that represents the asynchronous operation and can
+        ///   A <see cref="Task{TResult}"/> of <see cref="long"/> that represents the asynchronous operation and can
         ///   be used to access the result.
         /// </returns>
         public async Task<long> CountIncompletePartitionsAsync(string jobId, CancellationToken cancellation)
@@ -207,7 +207,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   A partition with the specified unique identifier already exists in the data store.
         /// </exception>
         /// <exception cref="InvalidReferenceException">
-        ///   The job referenced by the partition does not exist within the data store.
+        ///   The job referenced by the partition does not exist in the data store.
         /// </exception>
         public async Task InsertPartitionAsync(Partition partition, CancellationToken cancellation)
         {
@@ -241,7 +241,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   A partition with the specified unique identifier already exists in the data store.
         /// </exception>
         /// <exception cref="InvalidReferenceException">
-        ///   The job referenced by the partition does not exist within the data store.
+        ///   The job referenced by the partition does not exist in the data store.
         /// </exception>
         private async Task InsertPartitionAsync(NpgsqlConnection connection, NpgsqlTransaction transaction, Partition partition, CancellationToken cancellation)
         {
@@ -400,7 +400,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   canceled.
         /// </param>
         /// <returns>
-        ///   A <see cref="Task{TResult}"/> of <see cref="Partition"/> object that represents the asynchronous
+        ///   A <see cref="Task{TResult}"/> of <see cref="Partition"/> that represents the asynchronous
         ///   operation. The <see cref="Task{TResult}.Result"/> property contains the updated partition.
         /// </returns>
         /// <exception cref="LockException">
@@ -477,7 +477,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   canceled.
         /// </param>
         /// <returns>
-        ///   A <see cref="Task{TResult}"/> of <see cref="Job"/> object that represents the asynchronous operation.
+        ///   A <see cref="Task{TResult}"/> of <see cref="Job"/> that represents the asynchronous operation.
         /// </returns>
         /// <exception cref="UnknownIdentifierException">
         ///   A job with the specified unique identifier does not exist.
@@ -518,7 +518,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   canceled.
         /// </param>
         /// <returns>
-        ///   A <see cref="Task{TResult}"/> of <see cref="Partition"/> object that represents the asynchronous
+        ///   A <see cref="Task{TResult}"/> of <see cref="Partition"/> that represents the asynchronous
         ///   operation.
         /// </returns>
         /// <exception cref="UnknownIdentifierException">
@@ -571,7 +571,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   canceled.
         /// </param>
         /// <returns>
-        ///   A <see cref="Task{TResult}"/> of <see cref="Partition"/> object that represents the asynchronous
+        ///   A <see cref="Task{TResult}"/> of <see cref="Partition"/> that represents the asynchronous
         ///   operation. The <see cref="Task{TResult}.Result"/> property contains the acquired partition if succeeded;
         ///   otherwise, <see langword="null"/>.
         /// </returns>
@@ -642,7 +642,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   canceled.
         /// </param>
         /// <returns>
-        ///   A <see cref="Task{TResult}"/> of <see cref="bool"/> object that represents the asynchronous
+        ///   A <see cref="Task{TResult}"/> of <see cref="bool"/> that represents the asynchronous
         ///   operation. The <see cref="Task{TResult}.Result"/> property contains a value indicating whether a split
         ///   was requested.
         /// </returns>
@@ -707,7 +707,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   canceled.
         /// </param>
         /// <returns>
-        ///   A <see cref="Task{TResult}"/> of <see cref="bool"/> object that represents the asynchronous
+        ///   A <see cref="Task{TResult}"/> of <see cref="bool"/> that represents the asynchronous
         ///   operation. The <see cref="Task{TResult}.Result"/> property contains a value indicating whether a split
         ///   request is pending.
         /// </returns>
@@ -750,7 +750,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   canceled.
         /// </param>
         /// <returns>
-        ///   A <see cref="Task{TResult}"/> of <see cref="Job"/> object that represents the asynchronous operation and
+        ///   A <see cref="Task{TResult}"/> of <see cref="Job"/> that represents the asynchronous operation and
         ///   provides access to the result of the operation.
         /// </returns>
         /// <exception cref="ArgumentNullException">
@@ -802,7 +802,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   canceled.
         /// </param>
         /// <returns>
-        ///   A <see cref="Task{TResult}"/> of <see cref="Job"/> object that represents the asynchronous operation and
+        ///   A <see cref="Task{TResult}"/> of <see cref="Job"/> that represents the asynchronous operation and
         ///   provides access to the result of the operation.
         /// </returns>
         /// <exception cref="ArgumentNullException">
@@ -854,7 +854,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   canceled.
         /// </param>
         /// <returns>
-        ///   A <see cref="Task{TResult}"/> of <see cref="Job"/> object that represents the asynchronous operation and
+        ///   A <see cref="Task{TResult}"/> of <see cref="Job"/> that represents the asynchronous operation and
         ///   provides access to the result of the operation.
         /// </returns>
         /// <exception cref="ArgumentNullException">
@@ -909,7 +909,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   canceled.
         /// </param>
         /// <returns>
-        ///   A <see cref="Task{TResult}"/> of <see cref="Job"/> object that represents the asynchronous operation and
+        ///   A <see cref="Task{TResult}"/> of <see cref="Job"/> that represents the asynchronous operation and
         ///   provides access to the result of the operation.
         /// </returns>
         /// <exception cref="ArgumentNullException">
@@ -962,7 +962,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   canceled.
         /// </param>
         /// <returns>
-        ///   A <see cref="Task{TResult}"/> of <see cref="Job"/> object that represents the asynchronous operation and
+        ///   A <see cref="Task{TResult}"/> of <see cref="Job"/> that represents the asynchronous operation and
         ///   provides access to the result of the operation.
         /// </returns>
         /// <exception cref="ArgumentNullException">
@@ -1045,7 +1045,7 @@ namespace EXBP.Dipren.Data.Postgres
         ///   canceled.
         /// </param>
         /// <returns>
-        ///   A <see cref="Task{TResult}"/> of <see cref="bool"/> object that represents the asynchronous
+        ///   A <see cref="Task{TResult}"/> of <see cref="bool"/> that represents the asynchronous
         ///   operation.
         /// </returns>
         private async Task<bool> DoesPartitionExistAsync(NpgsqlTransaction transaction, Guid id, CancellationToken cancellation)
