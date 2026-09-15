@@ -995,10 +995,14 @@ namespace EXBP.Dipren.Data.Postgres
 
                 Job job = this.ReadJob(reader);
 
+                DateTime lastActivity = reader.GetDateTime("last_activity");
+
+                lastActivity = DateTime.SpecifyKind(lastActivity, DateTimeKind.Utc);
+
                 result = new StatusReport
                 {
                     Id = job.Id,
-                    Timestamp = uktsTimestamp,
+                    Timestamp = timestamp,
                     Created = job.Created,
                     Updated = job.Updated,
                     BatchSize = job.BatchSize,
@@ -1008,7 +1012,7 @@ namespace EXBP.Dipren.Data.Postgres
                     State = job.State,
                     Error = job.Error,
 
-                    LastActivity = reader.GetDateTime("last_activity"),
+                    LastActivity = lastActivity,
                     OwnershipChanges = reader.GetInt64("ownership_changes"),
                     PendingSplitRequests = reader.GetInt64("split_requests_pending"),
                     CurrentThroughput = reader.GetDouble("current_throughput"),
