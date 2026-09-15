@@ -450,7 +450,7 @@ WITH "candidate" AS
     "remaining" DESC
   LIMIT
     1
-  FOR UPDATE
+  FOR UPDATE SKIP LOCKED
 )
 UPDATE
   "dipren"."partitions" AS "target"
@@ -502,7 +502,7 @@ WITH "candidate" AS
     "remaining" DESC
   LIMIT
     1
-  FOR UPDATE
+  FOR UPDATE SKIP LOCKED
 )
 UPDATE
   "dipren"."partitions" AS "target"
