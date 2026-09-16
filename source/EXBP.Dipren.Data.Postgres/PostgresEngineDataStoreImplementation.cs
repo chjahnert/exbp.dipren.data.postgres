@@ -163,20 +163,18 @@ namespace EXBP.Dipren.Data.Postgres
 
             await using NpgsqlCommand command = this._dataSource.CreateCommand(PostgresEngineDataStoreImplementationResources.QueryInsertJob);
 
-            DateTime uktsCreated = DateTime.SpecifyKind(job.Created, DateTimeKind.Unspecified);
-            DateTime uktsUpdated = DateTime.SpecifyKind(job.Updated, DateTimeKind.Unspecified);
-            object uktsStarted = ((job.Started != null) ? DateTime.SpecifyKind(job.Started.Value, DateTimeKind.Unspecified) : DBNull.Value);
-            object uktsCompleted = ((job.Completed != null) ? DateTime.SpecifyKind(job.Completed.Value, DateTimeKind.Unspecified) : DBNull.Value);
+            object started = ((object) job.Started) ?? DBNull.Value;
+            object completed = ((object) job.Completed) ?? DBNull.Value;
             object error = ((job.Error != null) ? job.Error : DBNull.Value);
 
             command.Parameters.AddWithValue("@id", NpgsqlDbType.Varchar, COLUMN_JOB_NAME_LENGTH, job.Id);
-            command.Parameters.AddWithValue("@created", NpgsqlDbType.Timestamp, uktsCreated);
-            command.Parameters.AddWithValue("@updated", NpgsqlDbType.Timestamp, uktsUpdated);
+            command.Parameters.AddWithValue("@created", NpgsqlDbType.TimestampTz, job.Created);
+            command.Parameters.AddWithValue("@updated", NpgsqlDbType.TimestampTz, job.Updated);
             command.Parameters.AddWithValue("@batch_size", NpgsqlDbType.Integer, job.BatchSize);
             command.Parameters.AddWithValue("@timeout", NpgsqlDbType.Bigint, job.Timeout.Ticks);
             command.Parameters.AddWithValue("@clock_drift", NpgsqlDbType.Bigint, job.ClockDrift.Ticks);
-            command.Parameters.AddWithValue("@started", NpgsqlDbType.Timestamp, uktsStarted);
-            command.Parameters.AddWithValue("@completed", NpgsqlDbType.Timestamp, uktsCompleted);
+            command.Parameters.AddWithValue("@started", NpgsqlDbType.TimestampTz, started);
+            command.Parameters.AddWithValue("@completed", NpgsqlDbType.TimestampTz, completed);
             command.Parameters.AddWithValue("@state", job.State);
             command.Parameters.AddWithValue("@error", NpgsqlDbType.Text, error);
 
@@ -257,13 +255,11 @@ namespace EXBP.Dipren.Data.Postgres
             };
 
             string id = partition.Id.ToString("d");
-            DateTime uktsCreated = DateTime.SpecifyKind(partition.Created, DateTimeKind.Unspecified);
-            DateTime uktsUpdated = DateTime.SpecifyKind(partition.Updated, DateTimeKind.Unspecified);
 
             command.Parameters.AddWithValue("@id", NpgsqlDbType.Char, COLUMN_PARTITION_ID_LENGTH, id);
             command.Parameters.AddWithValue("@job_id", NpgsqlDbType.Varchar, COLUMN_JOB_NAME_LENGTH, partition.JobId);
-            command.Parameters.AddWithValue("@created", NpgsqlDbType.Timestamp, uktsCreated);
-            command.Parameters.AddWithValue("@updated", NpgsqlDbType.Timestamp, uktsUpdated);
+            command.Parameters.AddWithValue("@created", NpgsqlDbType.TimestampTz, partition.Created);
+            command.Parameters.AddWithValue("@updated", NpgsqlDbType.TimestampTz, partition.Updated);
             command.Parameters.AddWithValue("@owner", NpgsqlDbType.Varchar, COLUMN_PARTITION_OWNER_LENGTH, ((object) partition.Owner) ?? DBNull.Value);
             command.Parameters.AddWithValue("@first", NpgsqlDbType.Text, partition.First);
             command.Parameters.AddWithValue("@last", NpgsqlDbType.Text, partition.Last);
@@ -333,11 +329,10 @@ namespace EXBP.Dipren.Data.Postgres
                 };
 
                 string id = partitionToUpdate.Id.ToString("d");
-                DateTime uktsUpdated = DateTime.SpecifyKind(partitionToUpdate.Updated, DateTimeKind.Unspecified);
 
                 command.Parameters.AddWithValue("@partition_id", NpgsqlDbType.Char, COLUMN_PARTITION_ID_LENGTH, id);
                 command.Parameters.AddWithValue("@owner", NpgsqlDbType.Varchar, COLUMN_PARTITION_OWNER_LENGTH, ((object) partitionToUpdate.Owner) ?? DBNull.Value);
-                command.Parameters.AddWithValue("@updated", NpgsqlDbType.Timestamp, uktsUpdated);
+                command.Parameters.AddWithValue("@updated", NpgsqlDbType.TimestampTz, partitionToUpdate.Updated);
                 command.Parameters.AddWithValue("@last", NpgsqlDbType.Text, partitionToUpdate.Last);
                 command.Parameters.AddWithValue("@is_inclusive", NpgsqlDbType.Boolean, partitionToUpdate.IsInclusive);
                 command.Parameters.AddWithValue("@position", NpgsqlDbType.Text, ((object) partitionToUpdate.Position) ?? DBNull.Value);
@@ -426,9 +421,8 @@ namespace EXBP.Dipren.Data.Postgres
                 };
 
                 string sid = id.ToString("d");
-                DateTime uktsTimestamp = DateTime.SpecifyKind(timestamp, DateTimeKind.Unspecified);
 
-                command.Parameters.AddWithValue("@updated", NpgsqlDbType.Timestamp, uktsTimestamp);
+                command.Parameters.AddWithValue("@updated", NpgsqlDbType.TimestampTz, timestamp);
                 command.Parameters.AddWithValue("@position", NpgsqlDbType.Text, ((object) position) ?? DBNull.Value);
                 command.Parameters.AddWithValue("@processed", NpgsqlDbType.Bigint, processed);
                 command.Parameters.AddWithValue("@remaining", NpgsqlDbType.Bigint, remaining);
@@ -594,13 +588,11 @@ namespace EXBP.Dipren.Data.Postgres
                     Connection = connection
                 };
 
-                DateTime uktsTimestamp = DateTime.SpecifyKind(timestamp, DateTimeKind.Unspecified);
-                DateTime uktsActive = DateTime.SpecifyKind(active, DateTimeKind.Unspecified);
 
                 command.Parameters.AddWithValue("@job_id", NpgsqlDbType.Char, COLUMN_JOB_NAME_LENGTH, jobId);
                 command.Parameters.AddWithValue("@owner", NpgsqlDbType.Varchar, COLUMN_PARTITION_OWNER_LENGTH, requester);
-                command.Parameters.AddWithValue("@updated", NpgsqlDbType.Timestamp, uktsTimestamp);
-                command.Parameters.AddWithValue("@active", NpgsqlDbType.Timestamp, uktsActive);
+                command.Parameters.AddWithValue("@updated", NpgsqlDbType.TimestampTz, timestamp);
+                command.Parameters.AddWithValue("@active", NpgsqlDbType.TimestampTz, active);
 
                 await using (DbDataReader reader = await command.ExecuteReaderAsync(cancellation))
                 {
@@ -665,11 +657,10 @@ namespace EXBP.Dipren.Data.Postgres
                     Connection = connection
                 };
 
-                DateTime uktsActive = DateTime.SpecifyKind(active, DateTimeKind.Unspecified);
 
                 command.Parameters.AddWithValue("@job_id", NpgsqlDbType.Char, COLUMN_JOB_NAME_LENGTH, jobId);
                 command.Parameters.AddWithValue("@requester", NpgsqlDbType.Char, COLUMN_PARTITION_OWNER_LENGTH, requester);
-                command.Parameters.AddWithValue("@active", NpgsqlDbType.Timestamp, uktsActive);
+                command.Parameters.AddWithValue("@active", NpgsqlDbType.TimestampTz, active);
 
                 int affected = -1;
 
@@ -765,10 +756,9 @@ namespace EXBP.Dipren.Data.Postgres
 
             await using NpgsqlCommand command = this._dataSource.CreateCommand(PostgresEngineDataStoreImplementationResources.QueryMarkJobAsReady);
 
-            DateTime uktsTimestamp = DateTime.SpecifyKind(timestamp, DateTimeKind.Unspecified);
 
             command.Parameters.AddWithValue("@id", NpgsqlDbType.Varchar, COLUMN_JOB_NAME_LENGTH, id);
-            command.Parameters.AddWithValue("@timestamp", NpgsqlDbType.Timestamp, uktsTimestamp);
+            command.Parameters.AddWithValue("@timestamp", NpgsqlDbType.TimestampTz, timestamp);
             command.Parameters.AddWithValue("@state", JobState.Ready);
 
             Job result = null;
@@ -817,10 +807,9 @@ namespace EXBP.Dipren.Data.Postgres
 
             await using NpgsqlCommand command = this._dataSource.CreateCommand(PostgresEngineDataStoreImplementationResources.QueryMarkJobAsStarted);
 
-            DateTime uktsTimestamp = DateTime.SpecifyKind(timestamp, DateTimeKind.Unspecified);
 
             command.Parameters.AddWithValue("@id", NpgsqlDbType.Varchar, COLUMN_JOB_NAME_LENGTH, id);
-            command.Parameters.AddWithValue("@timestamp", NpgsqlDbType.Timestamp, uktsTimestamp);
+            command.Parameters.AddWithValue("@timestamp", NpgsqlDbType.TimestampTz, timestamp);
             command.Parameters.AddWithValue("@state", JobState.Processing);
 
             Job result = null;
@@ -869,10 +858,9 @@ namespace EXBP.Dipren.Data.Postgres
 
             await using NpgsqlCommand command = this._dataSource.CreateCommand(PostgresEngineDataStoreImplementationResources.QueryMarkJobAsCompleted);
 
-            DateTime uktsTimestamp = DateTime.SpecifyKind(timestamp, DateTimeKind.Unspecified);
 
             command.Parameters.AddWithValue("@id", NpgsqlDbType.Varchar, COLUMN_JOB_NAME_LENGTH, id);
-            command.Parameters.AddWithValue("@timestamp", NpgsqlDbType.Timestamp, uktsTimestamp);
+            command.Parameters.AddWithValue("@timestamp", NpgsqlDbType.TimestampTz, timestamp);
             command.Parameters.AddWithValue("@state", JobState.Completed);
 
             Job result = null;
@@ -924,10 +912,9 @@ namespace EXBP.Dipren.Data.Postgres
 
             await using NpgsqlCommand command = this._dataSource.CreateCommand(PostgresEngineDataStoreImplementationResources.QueryMarkJobAsFailed);
 
-            DateTime uktsTimestamp = DateTime.SpecifyKind(timestamp, DateTimeKind.Unspecified);
 
             command.Parameters.AddWithValue("@id", NpgsqlDbType.Varchar, COLUMN_JOB_NAME_LENGTH, id);
-            command.Parameters.AddWithValue("@timestamp", NpgsqlDbType.Timestamp, uktsTimestamp);
+            command.Parameters.AddWithValue("@timestamp", NpgsqlDbType.TimestampTz, timestamp);
             command.Parameters.AddWithValue("@state", JobState.Failed);
             command.Parameters.AddWithValue("@error", NpgsqlDbType.Text, ((object) error) ?? DBNull.Value);
 
@@ -977,10 +964,9 @@ namespace EXBP.Dipren.Data.Postgres
 
             await using NpgsqlCommand command = this._dataSource.CreateCommand(PostgresEngineDataStoreImplementationResources.QueryRetrieveJobStatusReport);
 
-            DateTime uktsTimestamp = DateTime.SpecifyKind(timestamp, DateTimeKind.Unspecified);
 
             command.Parameters.AddWithValue("@id", NpgsqlDbType.Varchar, COLUMN_JOB_NAME_LENGTH, id);
-            command.Parameters.AddWithValue("@timestamp", NpgsqlDbType.Timestamp, uktsTimestamp);
+            command.Parameters.AddWithValue("@timestamp", NpgsqlDbType.TimestampTz, timestamp);
 
             StatusReport result = null;
 
